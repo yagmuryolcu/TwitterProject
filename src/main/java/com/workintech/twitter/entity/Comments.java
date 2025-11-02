@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "comments", schema = "twitter")
 @NoArgsConstructor
@@ -32,10 +34,10 @@ public class Comments {
 
 
     @Column(name = "created_at", updatable = false)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", updatable = false)
-    private String updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -56,8 +57,8 @@ public class Users {
     @ToString.Exclude
     private String bio;
 
-    @Column(name = "created_at")
-    private String createdAt;
+    @Column(name = "created_at",updatable = false, insertable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     @ToString.Exclude

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "likes", schema = "twitter")
 @AllArgsConstructor
@@ -33,5 +35,5 @@ public class Likes {
     private Tweets tweet;
 
     @Column(name = "liked_at", updatable = false, insertable = false)
-    private String likedAt;
+    private LocalDateTime likedAt;
 }

@@ -4,6 +4,8 @@ package com.workintech.twitter.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "retweets", schema = "twitter")
 @AllArgsConstructor
@@ -31,5 +33,5 @@ public class Retweets {
     private Tweets originalTweet;
 
     @Column(name = "created_at", updatable = false, insertable = false)
-    private String createdAt;
+    private LocalDateTime createdAt;
 }
