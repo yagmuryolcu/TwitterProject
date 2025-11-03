@@ -68,7 +68,7 @@ public class UsersServiceImpl implements UsersService{
             usersRepository.save(users);
             return usersMapper.toResponseDto(users);
         }
-            usersRepository.save(users);
+            users =usersRepository.save(users);
             return usersMapper.toResponseDto(users);
     }
 

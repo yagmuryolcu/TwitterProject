@@ -26,13 +26,10 @@ public class UsersMapper {
     public UsersResponseDto  toResponseDto (Users users){
 
         return  new UsersResponseDto(
-                users.getId(),
                 users.getUsername(),
                 users.getEmail(),
                 users.getFullName(),
-                users.getBio(),
-                users.getCreatedAt()
-
+                users.getBio()
         );
 
     }

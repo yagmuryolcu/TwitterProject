@@ -1,4 +1,15 @@
 package com.workintech.twitter.dto.request;
 
-public record LikesRequestDto() {
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
+
+public record LikesRequestDto(
+        @JsonProperty("user_id")
+        @NotNull
+        Long userId,
+
+        @JsonProperty("tweet_id")
+        @NotNull
+        Long tweetId
+) {
 }
