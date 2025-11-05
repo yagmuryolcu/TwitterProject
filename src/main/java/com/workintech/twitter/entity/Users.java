@@ -4,8 +4,10 @@ package com.workintech.twitter.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -57,8 +59,13 @@ public class Users {
     @ToString.Exclude
     private String bio;
 
-    @Column(name = "created_at",updatable = false, insertable = false)
+    @Column(name = "created_at",updatable = false, nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     @ToString.Exclude
@@ -84,6 +91,7 @@ public class Users {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Roles> roles = new HashSet<>();
+
 
     public void addTweet(Tweets tweet) {
         if (tweet != null && tweet.getUser() != null && tweet.getUser().equals(this)) {

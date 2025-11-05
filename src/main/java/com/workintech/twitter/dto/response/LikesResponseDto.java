@@ -1,12 +1,12 @@
-package com.workintech.twitter.dto.response;
+    package com.workintech.twitter.dto.response;
 
-import java.time.LocalDateTime;
+    import java.time.LocalDateTime;
 
-public record LikesResponseDto(
-        Long id,
-        Long userId,
-        String username,
-        Long tweetId,
-        LocalDateTime likedAt
-) {
-}
+    public record LikesResponseDto(
+            Long id,
+            Long userId,
+            String username,
+            Long tweetId,
+            LocalDateTime likedAt
+    ) {
+    }

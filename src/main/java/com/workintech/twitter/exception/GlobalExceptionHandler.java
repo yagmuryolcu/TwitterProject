@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,75 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(UsersNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UsersNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Kullanıcı bulunamadı",
+                LocalDateTime.now(),
+                List.of(ex.getMessage())
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TweetsNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTweetsNotFound(TweetsNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Tweet bulunamadı",
+                LocalDateTime.now(),
+                List.of(ex.getMessage())
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(LikesNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTweetsNotFound(LikesNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Beğeni bulunamadı",
+                LocalDateTime.now(),
+                List.of(ex.getMessage())
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CommentsNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCommentsNotFound(CommentsNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                403,
+                "Yetkisiz erişim.",
+                LocalDateTime.now(),
+                List.of(ex.getMessage())
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(RetweetsNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRetweetsNotFound(RetweetsNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                403,
+                "Yetkisiz erişim.",
+                LocalDateTime.now(),
+                List.of(ex.getMessage())
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+    @ExceptionHandler(RolesNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRolesNotFound(RolesNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Rol bulunamadı.",
+                LocalDateTime.now(),
+                List.of(ex.getMessage())
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+
+
+
 }
 
 

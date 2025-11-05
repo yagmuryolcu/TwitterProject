@@ -7,6 +7,8 @@ import com.workintech.twitter.dto.response.LikesResponseDto;
 import com.workintech.twitter.entity.Likes;
 import com.workintech.twitter.entity.Tweets;
 import com.workintech.twitter.entity.Users;
+import com.workintech.twitter.exception.TweetsNotFoundException;
+import com.workintech.twitter.exception.UsersNotFoundException;
 import com.workintech.twitter.repository.TweetsRepository;
 import com.workintech.twitter.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +28,11 @@ public class LikesMapper {
     public Likes toEntity(LikesRequestDto likesRequestDto, Users users, Tweets tweets){
         Likes likes = new Likes();
         Users user=userRepository.findById(likesRequestDto.userId())
-                .orElseThrow(()-> new RuntimeException(likesRequestDto.userId() + "id'li kullanıcı bulunamadı."));
+                .orElseThrow(()-> new UsersNotFoundException(likesRequestDto.userId() + " id'li kullanıcı bulunamadı."));
         likes.setUser(users);
 
         Tweets tweet = tweetRepository.findById(likesRequestDto.tweetId())
-                .orElseThrow(() -> new RuntimeException(likesRequestDto.tweetId() + "id'li tweet bulunamadi"));
+                .orElseThrow(() -> new TweetsNotFoundException(likesRequestDto.tweetId() + " id'li tweet bulunamadi"));
 
         likes.setTweet(tweet);
 

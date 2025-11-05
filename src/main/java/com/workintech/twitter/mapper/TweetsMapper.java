@@ -5,6 +5,7 @@ import com.workintech.twitter.dto.request.TweetsRequestDto;
 import com.workintech.twitter.dto.response.TweetsResponseDto;
 import com.workintech.twitter.entity.Tweets;
 import com.workintech.twitter.entity.Users;
+import com.workintech.twitter.exception.UsersNotFoundException;
 import com.workintech.twitter.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class TweetsMapper {
 
 
         Users user = userRepository.findById(tweetRequestDto.userId())
-                .orElseThrow(() -> new RuntimeException(tweetRequestDto.userId() + "id'li kullanici bulunamadi"));
+                .orElseThrow(() -> new UsersNotFoundException(tweetRequestDto.userId() + " id'li kullanici bulunamadi"));
 
         tweet.setUser(user);
 

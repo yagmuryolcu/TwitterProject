@@ -28,7 +28,7 @@ public class LikesController {
         return likesService.getAll();
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public LikesResponseDto findById(@Positive @PathVariable("id") Long id) {
         return likesService.findById(id);
     }
@@ -51,13 +51,12 @@ public class LikesController {
     }
 
 //tekrar dön buraya
-    @DeleteMapping("/id")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void dislike(
             @RequestParam @Positive Long userId,
             @RequestParam @Positive Long tweetId) {
         likesService.deleteByUserAndTweet(userId, tweetId);
     }
-
 
 }

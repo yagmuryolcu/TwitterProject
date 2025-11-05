@@ -5,6 +5,9 @@ import com.workintech.twitter.dto.response.RetweetsResponseDto;
 import com.workintech.twitter.entity.Retweets;
 import com.workintech.twitter.entity.Tweets;
 import com.workintech.twitter.entity.Users;
+import com.workintech.twitter.exception.RetweetsNotFoundException;
+import com.workintech.twitter.exception.TweetsNotFoundException;
+import com.workintech.twitter.exception.UsersNotFoundException;
 import com.workintech.twitter.mapper.RetweetsMapper;
 import com.workintech.twitter.repository.RetweetsRepository;
 import com.workintech.twitter.repository.TweetsRepository;
@@ -44,7 +47,7 @@ public class RetweetsServiceImpl implements RetweetsService {
     public RetweetsResponseDto findById(Long id) {
         Retweets retweet = retweetsRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException(id + " id'li retweet bulunamadı."));
+                .orElseThrow(() -> new RetweetsNotFoundException(id + " id'li retweet bulunamadı."));
         return retweetsMapper.toResponseDto(retweet);
     }
 
@@ -52,7 +55,7 @@ public class RetweetsServiceImpl implements RetweetsService {
     public List<RetweetsResponseDto> findByUserId(Long userId) {
         Users user = usersRepository
                 .findById(userId)
-                .orElseThrow(() -> new RuntimeException(userId + " id'li kullanıcı bulunamadı."));
+                .orElseThrow(() -> new UsersNotFoundException(userId + " id'li kullanıcı bulunamadı."));
 
         return retweetsRepository
                 .findByUser(user)
@@ -65,7 +68,7 @@ public class RetweetsServiceImpl implements RetweetsService {
     public List<RetweetsResponseDto> findByOriginalTweetId(Long tweetId) {
         Tweets tweet = tweetsRepository
                 .findById(tweetId)
-                .orElseThrow(() -> new RuntimeException(tweetId + " id'li tweet bulunamadı."));
+                .orElseThrow(() -> new TweetsNotFoundException(tweetId + " id'li tweet bulunamadı."));
 
         return retweetsRepository
                 .findByOriginalTweet(tweet)
@@ -78,11 +81,11 @@ public class RetweetsServiceImpl implements RetweetsService {
     public RetweetsResponseDto create(RetweetsRequestDto retweetsRequestDto) {
         Users user = usersRepository
                 .findById(retweetsRequestDto.userId())
-                .orElseThrow(() -> new RuntimeException(retweetsRequestDto.userId() + " id'li kullanıcı bulunamadı."));
+                .orElseThrow(() -> new UsersNotFoundException(retweetsRequestDto.userId() + " id'li kullanıcı bulunamadı."));
 
         Tweets originalTweet = tweetsRepository
                 .findById(retweetsRequestDto.originalTweetId())
-                .orElseThrow(() -> new RuntimeException(retweetsRequestDto.originalTweetId() + " id'li tweet bulunamadı."));
+                .orElseThrow(() -> new TweetsNotFoundException(retweetsRequestDto.originalTweetId() + " id'li tweet bulunamadı."));
 
         // mevcutta varmı
         Optional<Retweets> existingRetweet = retweetsRepository.findByUserAndOriginalTweet(user, originalTweet);
@@ -106,10 +109,10 @@ public class RetweetsServiceImpl implements RetweetsService {
     public void deleteById(Long id, Long currentUserId) {
         Retweets retweet = retweetsRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException(id + " id'li retweet bulunamadı."));
+                .orElseThrow(() -> new RetweetsNotFoundException(id + " id'li retweet bulunamadı."));
 
         if (!retweet.getUser().getId().equals(currentUserId)) {
-            throw new RuntimeException("Bu retweet'i sadece sahibi silebilir.");
+            throw new RetweetsNotFoundException("Bu retweet'i sadece sahibi silebilir.");
         }
 
         retweet.getOriginalTweet().removeRetweet(retweet);

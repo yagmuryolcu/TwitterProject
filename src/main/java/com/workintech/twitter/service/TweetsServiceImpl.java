@@ -4,6 +4,7 @@ import com.workintech.twitter.dto.patchrequest.TweetsPatchRequestDto;
 import com.workintech.twitter.dto.request.TweetsRequestDto;
 import com.workintech.twitter.dto.response.TweetsResponseDto;
 import com.workintech.twitter.entity.Tweets;
+import com.workintech.twitter.exception.TweetsNotFoundException;
 import com.workintech.twitter.mapper.TweetsMapper;
 import com.workintech.twitter.repository.TweetsRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class TweetsServiceImpl implements TweetsService{
             return tweetsMapper.toResponseDto(tweets);
         }
 
-        throw  new RuntimeException(id + " 'id li tweet bulunamadı.");
+        throw  new TweetsNotFoundException(id + " 'id li tweet bulunamadı.");
     }
 
     @Override
@@ -50,13 +51,26 @@ public class TweetsServiceImpl implements TweetsService{
 
     @Override
     public TweetsResponseDto replaceOrCreate(Long id, TweetsRequestDto tweetRequestDto) {
-        Tweets tweetsToReplaceOrCreate =tweetsMapper.toEntity(tweetRequestDto);
-        Optional<Tweets> optionalTweets=tweetsRepository.findById(id);
-        if (optionalTweets.isPresent()){
-        tweetsToReplaceOrCreate.setTweetId(id);
-        return tweetsMapper.toResponseDto(tweetsRepository.save(tweetsToReplaceOrCreate));
+        Optional<Tweets> optionalTweet = tweetsRepository.findById(id);
+
+        if (optionalTweet.isPresent()) {
+            Tweets existingTweet = optionalTweet.get();
+
+            // Mevcut tweet'in create bilgisini koru
+            existingTweet.setContents(tweetRequestDto.contents());
+            existingTweet.setUser(
+                    tweetsMapper.toEntity(tweetRequestDto).getUser()
+            );
+
+            // createdAt dokunmadan save et
+            Tweets updatedTweet = tweetsRepository.save(existingTweet);
+            return tweetsMapper.toResponseDto(updatedTweet);
         }
-        return tweetsMapper.toResponseDto(tweetsRepository.save(tweetsToReplaceOrCreate));
+
+        // Eğer tweet yoksa yeni oluştur
+        Tweets newTweet = tweetsMapper.toEntity(tweetRequestDto);
+        Tweets savedTweet = tweetsRepository.save(newTweet);
+        return tweetsMapper.toResponseDto(savedTweet);
 
     }
 
@@ -64,7 +78,7 @@ public class TweetsServiceImpl implements TweetsService{
     public TweetsResponseDto update(Long id, TweetsPatchRequestDto tweetPatchRequestDto) {
         Tweets tweetToUpdate = tweetsRepository
                 .findById(id)
-                .orElseThrow(()-> new RuntimeException(id + "id'li tweet bulunamadi"));
+                .orElseThrow(()-> new TweetsNotFoundException(id + "id'li tweet bulunamadi"));
 
             tweetsMapper.updateEntity(tweetToUpdate,tweetPatchRequestDto);
             return tweetsMapper.toResponseDto(tweetsRepository.save(tweetToUpdate));
@@ -72,6 +86,14 @@ public class TweetsServiceImpl implements TweetsService{
 
     @Override
     public void deleteById(Long id) {
+      /*  Tweets tweet = tweetsRepository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException(id + " id'li tweet bulunamadı."));
+
+        if (!tweet.getUser().getId().equals(currentUserId)) {
+            throw new RuntimeException("Bu tweet'i sadece sahibi silebilir.");
+        }
+*/
         tweetsRepository.deleteById(id);
     }
 }

@@ -30,16 +30,27 @@ public class Comments {
     @NotBlank
     @NotEmpty
     @Size(max = 255, message = "Comment content cannot exceed 255 characters")
-    private String content;
+    private String commentContent;
 
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at")
+    @NotNull
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", updatable = false)
+    @Column(name = "updated_at" , updatable = true)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+        @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private Users user;

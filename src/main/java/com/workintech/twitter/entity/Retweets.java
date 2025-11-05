@@ -32,6 +32,11 @@ public class Retweets {
     @ToString.Exclude
     private Tweets originalTweet;
 
-    @Column(name = "created_at", updatable = false, insertable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
 }

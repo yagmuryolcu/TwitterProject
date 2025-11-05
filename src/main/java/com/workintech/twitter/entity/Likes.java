@@ -34,6 +34,12 @@ public class Likes {
     @ToString.Exclude
     private Tweets tweet;
 
-    @Column(name = "liked_at", updatable = false, insertable = false)
+    @Column(name = "liked_at")
     private LocalDateTime likedAt;
+
+    @PrePersist
+    public void onCreate() {
+        this.likedAt = LocalDateTime.now();
+    }
+
 }

@@ -8,6 +8,7 @@ import com.workintech.twitter.entity.Tweets;
 import com.workintech.twitter.entity.Users;
 import com.workintech.twitter.exception.LikesNotFoundException;
 import com.workintech.twitter.exception.TweetsNotFoundException;
+import com.workintech.twitter.exception.UsersNotFoundException;
 import com.workintech.twitter.mapper.LikesMapper;
 import com.workintech.twitter.repository.LikesRepository;
 import com.workintech.twitter.repository.TweetsRepository;
@@ -118,11 +119,24 @@ public class LikesServiceImpl implements LikesService {
 
     @Override
     public LikesResponseDto update(Long id, LikesPatchRequestDto likesPatchRequestDto) {
-        Likes likesToUpdate =likesRepository
+        Likes likesToUpdate = likesRepository
                 .findById(id)
-                .orElseThrow(()-> new LikesNotFoundException(id + "id'li beğeni bulunamadi"));
-        likesMapper.updateEntity(likesToUpdate,likesPatchRequestDto);
-        return likesMapper.toResponseDto(likesRepository.save(likesToUpdate));
+                .orElseThrow(() -> new LikesNotFoundException(id + " id'li beğeni bulunamadı"));
+
+        if (likesPatchRequestDto.userId() != null) {
+            Users user = usersRepository.findById(likesPatchRequestDto.userId())
+                    .orElseThrow(() -> new UsersNotFoundException(likesPatchRequestDto.userId() + " id'li kullanıcı bulunamadı."));
+            likesToUpdate.setUser(user);
+        }
+
+        if (likesPatchRequestDto.tweetId() != null) {
+            Tweets tweet = tweetsRepository.findById(likesPatchRequestDto.tweetId())
+                    .orElseThrow(() -> new TweetsNotFoundException(likesPatchRequestDto.tweetId() + " id'li tweet bulunamadı."));
+            likesToUpdate.setTweet(tweet);
+        }
+
+        Likes saved = likesRepository.save(likesToUpdate);
+        return likesMapper.toResponseDto(saved);
     }
 
     @Override

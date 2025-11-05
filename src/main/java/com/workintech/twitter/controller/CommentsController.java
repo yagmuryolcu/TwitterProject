@@ -4,10 +4,12 @@ import com.workintech.twitter.dto.patchrequest.CommentsPatchRequestDto;
 import com.workintech.twitter.dto.request.CommentsRequestDto;
 import com.workintech.twitter.dto.response.CommentsResponseDto;
 import com.workintech.twitter.service.CommentsService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,10 +45,17 @@ public class CommentsController {
     }
 
     @PutMapping("/{id}")
+    public CommentsResponseDto replaceOrCreate(
+            @PathVariable @Positive Long id,
+            @Valid @RequestBody CommentsRequestDto commentsRequestDto
+    ) {
+        return commentsService.replaceOrCreate(id, commentsRequestDto);
+    }
+    @PatchMapping("/{id}")
     public CommentsResponseDto update(
-            @Positive @PathVariable("id") Long id,
+            @PathVariable Long id,
             @Validated @RequestBody CommentsPatchRequestDto commentsPatchRequestDto,
-            @RequestParam @Positive Long currentUserId) {
+            @RequestParam Long currentUserId) {
         return commentsService.update(id, commentsPatchRequestDto, currentUserId);
     }
 

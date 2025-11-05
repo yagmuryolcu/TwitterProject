@@ -13,7 +13,7 @@ public class CommentsMapper {
 
     public Comments toEntity(CommentsRequestDto commentsRequestDto, Users user, Tweets tweet) {
         Comments comment = new Comments();
-        comment.setContent(commentsRequestDto.content());
+        comment.setCommentContent(commentsRequestDto.commentContent());
         comment.setUser(user);
         comment.setTweet(tweet);
         return comment;
@@ -22,7 +22,7 @@ public class CommentsMapper {
     public CommentsResponseDto toResponseDto(Comments comment) {
         return new CommentsResponseDto(
                 comment.getId(),
-                comment.getContent(),
+                comment.getCommentContent(),
                 comment.getCreatedAt(),
                 comment.getUpdatedAt(),
                 comment.getUser().getId(),
@@ -32,8 +32,8 @@ public class CommentsMapper {
     }
 
     public Comments updateEntity(Comments commentToUpdate, CommentsPatchRequestDto commentsPatchRequestDto) {
-        if (commentsPatchRequestDto.content() != null) {
-            commentToUpdate.setContent(commentsPatchRequestDto.content());
+        if (commentsPatchRequestDto.commentContent() != null) {
+            commentToUpdate.setCommentContent(commentsPatchRequestDto.commentContent());
         }
         return commentToUpdate;
     }

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record CommentsResponseDto(
         Long id,
-        String content,
+        String commentContent,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         Long userId,

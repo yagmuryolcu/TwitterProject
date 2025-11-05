@@ -8,5 +8,6 @@ public record TweetsResponseDto(
         LocalDateTime createdAt,
         Long userId,
         String username
+
 ) {
 }

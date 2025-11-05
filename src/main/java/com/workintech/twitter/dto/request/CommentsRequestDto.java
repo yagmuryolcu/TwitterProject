@@ -9,7 +9,7 @@ public record CommentsRequestDto(
         @NotBlank
         @NotEmpty
         @Size(max = 255, message = "Comment content cannot exceed 255 characters")
-        String content,
+        String commentContent,
 
         @JsonProperty("user_id")
         @NotNull

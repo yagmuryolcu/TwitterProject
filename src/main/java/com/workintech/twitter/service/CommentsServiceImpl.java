@@ -6,6 +6,9 @@ import com.workintech.twitter.dto.response.CommentsResponseDto;
 import com.workintech.twitter.entity.Comments;
 import com.workintech.twitter.entity.Tweets;
 import com.workintech.twitter.entity.Users;
+import com.workintech.twitter.exception.CommentsNotFoundException;
+import com.workintech.twitter.exception.TweetsNotFoundException;
+import com.workintech.twitter.exception.UsersNotFoundException;
 import com.workintech.twitter.mapper.CommentsMapper;
 import com.workintech.twitter.repository.CommentsRepository;
 import com.workintech.twitter.repository.TweetsRepository;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,33 +63,58 @@ public class CommentsServiceImpl  implements CommentsService{
                 .map(commentsMapper::toResponseDto)
                 .toList();
     }
+
     @Override
     public CommentsResponseDto create(CommentsRequestDto commentsRequestDto) {
         Users user = usersRepository
                 .findById(commentsRequestDto.userId())
-                .orElseThrow(() -> new RuntimeException(commentsRequestDto.userId() + " id'li kullanıcı bulunamadı."));
+                .orElseThrow(() -> new UsersNotFoundException(commentsRequestDto.userId() + " id'li kullanıcı bulunamadı."));
 
         Tweets tweet = tweetsRepository
                 .findById(commentsRequestDto.tweetId())
-                .orElseThrow(() -> new RuntimeException(commentsRequestDto.tweetId() + " id'li tweet bulunamadı."));
+                .orElseThrow(() -> new TweetsNotFoundException(commentsRequestDto.tweetId() + " id'li tweet bulunamadı."));
 
         Comments comment = commentsMapper.toEntity(commentsRequestDto, user, tweet);
         comment = commentsRepository.save(comment);
-
         user.addComment(comment);
         tweet.addComment(comment);
-
         return commentsMapper.toResponseDto(comment);
+    }
+
+    @Override
+    public CommentsResponseDto replaceOrCreate(Long id, CommentsRequestDto commentsRequestDto) {
+        Optional<Comments> optionalComment = commentsRepository.findById(id);
+
+        Users user = usersRepository
+                .findById(commentsRequestDto.userId())
+                .orElseThrow(() -> new UsersNotFoundException(commentsRequestDto.userId() + " id'li kullanıcı bulunamadı."));
+
+        Tweets tweet = tweetsRepository
+                .findById(commentsRequestDto.tweetId())
+                .orElseThrow(() -> new TweetsNotFoundException(commentsRequestDto.tweetId() + " id'li tweet bulunamadı."));
+
+        if (optionalComment.isPresent()) {
+            Comments existingComment = optionalComment.get();
+            existingComment.setCommentContent(commentsRequestDto.commentContent());
+            existingComment.setTweet(tweet);
+            existingComment.setUser(user);
+            commentsRepository.save(existingComment);
+            return commentsMapper.toResponseDto(existingComment);
+        } else {
+            Comments newComment = commentsMapper.toEntity(commentsRequestDto, user, tweet);
+            commentsRepository.save(newComment);
+            return commentsMapper.toResponseDto(newComment);
+        }
     }
 
     @Override
     public CommentsResponseDto update(Long id, CommentsPatchRequestDto commentsPatchRequestDto, Long currentUserId) {
         Comments commentToUpdate = commentsRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException(id + " id'li yorum bulunamadı."));
+                .orElseThrow(() -> new CommentsNotFoundException(id + " id'li yorum bulunamadı."));
 
         if (!commentToUpdate.getUser().getId().equals(currentUserId)) {
-            throw new RuntimeException("Bu yorumu sadece sahibi güncelleyebilir.");
+            throw new CommentsNotFoundException("Bu yorumu sadece sahibi güncelleyebilir.");
         }
 
         commentToUpdate = commentsMapper.updateEntity(commentToUpdate, commentsPatchRequestDto);
@@ -98,7 +127,7 @@ public class CommentsServiceImpl  implements CommentsService{
     public void deleteById(Long id, Long currentUserId, Long tweetOwnerId) {
         Comments comment = commentsRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException(id + " id'li yorum bulunamadı."));
+                .orElseThrow(() -> new CommentsNotFoundException(id + " id'li yorum bulunamadı."));
 
         Long commentOwnerId = comment.getUser().getId();
 

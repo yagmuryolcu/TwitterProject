@@ -15,4 +15,7 @@ public interface UsersService {
     UsersResponseDto replaceOrCreate(Long id, UsersRequestDto userRequestDto);
     UsersResponseDto update(Long id, UsersPatchRequestDto userPatchRequestDto);
     void deleteById(Long id);
+    void assignRoleToUser(Long userId, String roleName);
+    void removeRoleFromUser(Long userId, String roleName);
+    UsersResponseDto getUserRoles(Long userId);
 }
