@@ -2,13 +2,10 @@ package com.workintech.twitter.service;
 
 import com.workintech.twitter.dto.request.LoginRequestDto;
 import com.workintech.twitter.dto.request.RegisterRequestDto;
-import com.workintech.twitter.dto.response.AuthResponseDto;
 import com.workintech.twitter.dto.response.LoginResponseDto;
 import com.workintech.twitter.dto.response.RegisterResponseDto;
 import com.workintech.twitter.entity.Roles;
 import com.workintech.twitter.entity.Users;
-import com.workintech.twitter.exception.UserAlreadyRegisteredException;
-import com.workintech.twitter.exception.UsersNotFoundException;
 import com.workintech.twitter.repository.RolesRepository;
 import com.workintech.twitter.repository.UsersRepository;
 import jakarta.transaction.Transactional;
@@ -21,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
